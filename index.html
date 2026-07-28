@@ -152,7 +152,7 @@ button{font-family:inherit;}
 .lantern-card.revealed .face-hidden{opacity:0; pointer-events:none;}
 .lantern-card.revealed .face-shown{opacity:1; pointer-events:auto;}
 .lantern-card.revealed{box-shadow:0 0 55px 10px rgba(232,171,60,0.35), 0 14px 40px rgba(0,0,0,.35);}
-.lantern-card.revealed.is-outsider{box-shadow:0 0 55px 10px rgba(232,97,63,0.4), 0 14px 40px rgba(0,0,0,.35);}
+.no-anim, .no-anim *{transition:none !important;}
 
 .hidden-icon{font-size:46px; margin-bottom:14px; opacity:.85;}
 .hidden-txt{color:var(--text-muted); font-size:14.5px; font-weight:700;}
@@ -549,7 +549,13 @@ function renderRevealForCurrent(){
 }
 
 $('btn-next-player').addEventListener('click', ()=>{
-  $('lantern-card').classList.remove('revealed');
+  const card = $('lantern-card');
+  // إخفاء فوري تمامًا بدون أي تلاشي أو أثر بصري متبقٍّ من البطاقة السابقة
+  card.classList.add('no-anim');
+  card.classList.remove('revealed','is-outsider');
+  void card.offsetWidth; // إجبار المتصفح على إعادة الرسم قبل إزالة no-anim
+  card.classList.remove('no-anim');
+
   state.currentIdx++;
   if(state.currentIdx >= state.playersCount){ goToDiscuss(); }
   else { renderSeatRow(); renderRevealForCurrent(); }
