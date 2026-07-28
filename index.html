@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>برّة السالفة</title>
+<style>
+:root{
+  --bg-deep:#12162b;
+  --bg-panel:#1d2340;
+  --bg-panel-2:#272d52;
+  --accent-gold:#e8ab3c;
+  --accent-gold-dim:#8a6a2e;
+  --accent-rose:#e8613f;
+  --accent-teal:#4fb3a9;
+  --text-cream:#f3ead9;
+  --text-muted:#9ba0c2;
+  --line:rgba(243,234,217,0.10);
+  --radius:22px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(232,171,60,0.14), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 100%, rgba(79,179,169,0.10), transparent 60%),
+    var(--bg-deep);
+  color:var(--text-cream);
+  font-family:'Segoe UI','Geeza Pro','Dubai',Tahoma,Arial,system-ui,sans-serif;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overflow-x:hidden;
+}
+h1,h2,h3,.display{font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif;}
+button{font-family:inherit;}
+
+.stars{position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;}
+.stars span{position:absolute; width:2px; height:2px; background:var(--text-cream); border-radius:50%; opacity:.4; animation:twinkle 3.5s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.15} 50%{opacity:.7}}
+
+.app-outer{position:relative; z-index:1; min-height:100vh; display:flex; justify-content:center; align-items:stretch;}
+.app{width:100%; max-width:520px; min-height:100vh; display:flex; flex-direction:column; background:rgba(18,22,43,0.0);}
+@media (min-width:640px){
+  body{padding-top:26px; padding-bottom:26px;}
+  .app-outer{align-items:center;}
+  .app{
+    min-height:auto; height:min(880px, calc(100vh - 52px)); border-radius:36px; overflow:hidden;
+    border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,0.55), 0 0 0 8px rgba(255,255,255,0.02);
+    background:var(--bg-deep);
+  }
+}
+
+.screen{display:none; flex:1; flex-direction:column; padding:28px 22px 34px; animation:fadeIn .35s ease; overflow-y:auto;}
+.screen.active{display:flex;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)}}
+
+#screen-home{justify-content:center; align-items:center; text-align:center; gap:10px;}
+.lantern{
+  width:112px; height:112px; border-radius:50%;
+  background: radial-gradient(circle at 50% 40%, #ffd889, var(--accent-gold) 55%, var(--accent-gold-dim) 100%);
+  box-shadow: 0 0 50px 8px rgba(232,171,60,0.45), inset 0 -8px 14px rgba(0,0,0,0.25);
+  display:flex; align-items:center; justify-content:center;
+  font-size:46px; margin-bottom:6px;
+  animation: glow 3s ease-in-out infinite;
+}
+@keyframes glow{0%,100%{box-shadow:0 0 40px 6px rgba(232,171,60,0.35), inset 0 -8px 14px rgba(0,0,0,0.25)} 50%{box-shadow:0 0 62px 12px rgba(232,171,60,0.55), inset 0 -8px 14px rgba(0,0,0,0.25)}}
+.brand-title{font-size:44px; font-weight:900; margin:8px 0 2px; letter-spacing:-0.5px;}
+.brand-sub{color:var(--text-muted); font-size:15px; max-width:320px; line-height:1.9; margin-bottom:18px;}
+.btn{
+  border:none; border-radius:16px; padding:16px 30px; font-size:17px; font-weight:700;
+  cursor:pointer; min-height:52px; transition:transform .15s ease, filter .15s ease, opacity .15s ease;
+}
+.btn:active{transform:scale(.96);}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+.btn-primary{background:linear-gradient(135deg,#f2c469,var(--accent-gold)); color:#1a1408; box-shadow:0 8px 22px rgba(232,171,60,0.3);}
+.btn-ghost{background:transparent; color:var(--text-cream); border:1.5px solid var(--line);}
+.btn-block{width:100%;}
+.home-actions{display:flex; flex-direction:column; gap:12px; width:100%; max-width:280px; margin-top:8px;}
+.home-note{margin-top:26px; font-size:12.5px; color:var(--text-muted); line-height:1.8; max-width:300px;}
+
+.topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.back-btn{background:none; border:none; color:var(--text-muted); font-size:15px; cursor:pointer; display:flex; align-items:center; gap:6px; padding:6px;}
+.step-label{font-size:13px; color:var(--text-muted); font-weight:700;}
+
+.card{background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:16px;}
+.field-title{font-weight:800; font-size:15.5px; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+.field-hint{font-size:12.5px; color:var(--text-muted); margin-top:8px; line-height:1.7;}
+
+.stepper{display:flex; align-items:center; justify-content:center; gap:22px;}
+.stepper-btn{
+  width:48px; height:48px; border-radius:50%; border:1.5px solid var(--line); background:var(--bg-panel-2);
+  color:var(--text-cream); font-size:22px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.stepper-btn:active{transform:scale(.92); background:var(--accent-gold-dim);}
+.stepper-btn:disabled{opacity:.35; cursor:not-allowed;}
+.stepper-count{font-size:34px; font-weight:900; min-width:52px; text-align:center; font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif;}
+.stepper-count.small{font-size:26px; min-width:34px;}
+
+.chip-row{display:flex; flex-wrap:wrap; gap:9px;}
+.chip{
+  padding:10px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--bg-panel-2);
+  color:var(--text-muted); font-size:14px; font-weight:700; cursor:pointer; user-select:none;
+}
+.chip.selected{background:var(--accent-teal); color:#08201d; border-color:var(--accent-teal);}
+.chip:focus-visible, .stepper-btn:focus-visible, .btn:focus-visible, input:focus-visible{outline:3px solid var(--accent-teal); outline-offset:2px;}
+
+.timer-row{display:flex; gap:9px; flex-wrap:wrap;}
+.timer-chip{flex:1; min-width:70px; text-align:center; padding:12px 6px; border-radius:12px; border:1.5px solid var(--line); background:var(--bg-panel-2); color:var(--text-muted); font-weight:800; cursor:pointer; font-size:14px;}
+.timer-chip.selected{background:var(--accent-gold); color:#1a1408; border-color:var(--accent-gold);}
+
+.error-box{background:rgba(232,97,63,0.12); border:1px solid rgba(232,97,63,0.4); color:#ffb7a3; border-radius:12px; padding:10px 14px; font-size:13.5px; margin-bottom:14px; display:none;}
+.error-box.show{display:block;}
+
+.name-list{display:flex; flex-direction:column; gap:10px;}
+.name-row{display:flex; align-items:center; gap:10px;}
+.name-badge{
+  width:32px; height:32px; min-width:32px; border-radius:50%; background:var(--bg-panel-2); border:1.5px solid var(--line);
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--accent-teal);
+}
+.name-input{
+  flex:1; background:var(--bg-panel-2); border:1.5px solid var(--line); border-radius:12px;
+  color:var(--text-cream); padding:12px 14px; font-size:14.5px; font-family:inherit; min-width:0;
+}
+.name-input::placeholder{color:var(--text-muted);}
+.name-input:focus{outline:2px solid var(--accent-teal); border-color:transparent;}
+
+#screen-reveal{justify-content:flex-start;}
+.circle-row{display:flex; justify-content:center; gap:8px; margin-bottom:26px; flex-wrap:wrap;}
+.seat{
+  width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; background:var(--bg-panel-2); color:var(--text-muted); border:1.5px solid var(--line);
+}
+.seat.done{background:var(--accent-teal); color:#08201d; border-color:var(--accent-teal);}
+.seat.current{background:var(--accent-gold); color:#1a1408; border-color:var(--accent-gold); animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)} 50%{transform:scale(1.16)}}
+
+.pass-hint{text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:6px;}
+.player-name{text-align:center; font-size:26px; font-weight:900; margin-bottom:22px; word-break:break-word;}
+
+.card-stage{flex:1; display:flex; align-items:center; justify-content:center; perspective:1000px; margin-bottom:22px;}
+.lantern-card{
+  width:100%; max-width:300px; aspect-ratio:3/4; border-radius:26px; position:relative; cursor:pointer;
+  background:linear-gradient(160deg,var(--bg-panel),var(--bg-panel-2));
+  border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center;
+  box-shadow:0 14px 40px rgba(0,0,0,.35);
+  transition:box-shadow .4s ease;
+}
+.lantern-card .face{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px; border-radius:26px; transition:opacity .3s ease;}
+.face-hidden{opacity:1;}
+.face-shown{opacity:0; pointer-events:none;}
+.lantern-card.revealed .face-hidden{opacity:0; pointer-events:none;}
+.lantern-card.revealed .face-shown{opacity:1; pointer-events:auto;}
+.lantern-card.revealed{box-shadow:0 0 55px 10px rgba(232,171,60,0.35), 0 14px 40px rgba(0,0,0,.35);}
+.lantern-card.revealed.is-outsider{box-shadow:0 0 55px 10px rgba(232,97,63,0.4), 0 14px 40px rgba(0,0,0,.35);}
+
+.hidden-icon{font-size:46px; margin-bottom:14px; opacity:.85;}
+.hidden-txt{color:var(--text-muted); font-size:14.5px; font-weight:700;}
+.role-label{font-size:12.5px; color:var(--text-muted); font-weight:800; letter-spacing:.5px; margin-bottom:10px;}
+.role-cat{font-size:16px; color:var(--accent-teal); font-weight:800; margin-bottom:8px;}
+.role-word{font-size:30px; font-weight:900; font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif;}
+.outsider-emoji{font-size:44px; margin-bottom:8px;}
+.outsider-word{font-size:24px; font-weight:900; color:var(--accent-rose); font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif; margin-bottom:6px;}
+.outsider-sub{font-size:13.5px; color:var(--text-muted); line-height:1.8; max-width:220px;}
+
+.reveal-actions{display:flex; flex-direction:column; gap:12px;}
+
+#screen-discuss{justify-content:center; align-items:center; text-align:center;}
+.timer-ring-wrap{position:relative; width:220px; height:220px; margin-bottom:26px;}
+.timer-ring-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+.ring-bg{fill:none; stroke:var(--bg-panel-2); stroke-width:10;}
+.ring-fg{fill:none; stroke:var(--accent-gold); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 1s linear;}
+.timer-digits{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:44px; font-weight:900; font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif;}
+.discuss-title{font-size:20px; font-weight:800; margin-bottom:6px;}
+.discuss-sub{color:var(--text-muted); font-size:14px; max-width:280px; line-height:1.8; margin-bottom:26px;}
+.discuss-actions{display:flex; flex-direction:column; gap:12px; width:100%; max-width:300px;}
+
+#screen-result{justify-content:center; align-items:center; text-align:center;}
+.result-emoji{font-size:52px; margin-bottom:8px;}
+.result-title{font-size:24px; font-weight:900; margin-bottom:4px;}
+.result-card{background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px; width:100%; max-width:320px; margin:18px 0;}
+.result-row{display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); font-size:15px; text-align:right;}
+.result-row:last-child{border-bottom:none;}
+.result-row b{color:var(--accent-gold); font-family:'Geeza Pro','Dubai','Segoe UI',Tahoma,Arial,system-ui,sans-serif; font-size:17px;}
+.result-actions{display:flex; flex-direction:column; gap:12px; width:100%; max-width:300px; margin-top:6px;}
+
+@media (max-width:360px){
+  .brand-title{font-size:36px;}
+  .lantern{width:92px; height:92px; font-size:38px;}
+}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="app-outer"><div class="app">
+
+  <section id="screen-home" class="screen active">
+    <div class="lantern">🏮</div>
+    <h1 class="brand-title">برّة السالفة</h1>
+    <p class="brand-sub">لعبة جماعية للسوالف العائلية. الكل يعرف الكلمة إلا واحد أو أكثر برّة السالفة… وعليكم اكتشافهم قبل لا يكتشفون هم الكلمة!</p>
+    <div class="home-actions">
+      <button class="btn btn-primary btn-block" id="btn-go-setup">ابدأ لعبة جديدة</button>
+    </div>
+    <p class="home-note">مرّروا نفس الجوال على اللاعبين وحدًا وحدًا. كل جولة يتم اختيار "برّة السالفة" عشوائيًا بشكل مختلف.</p>
+  </section>
+
+  <section id="screen-setup" class="screen">
+    <div class="topbar">
+      <button class="back-btn" id="btn-back-home">→ رجوع</button>
+      <span class="step-label">إعداد الجولة</span>
+    </div>
+
+    <div class="error-box" id="setup-error"></div>
+
+    <div class="card">
+      <div class="field-title">👥 عدد اللاعبين</div>
+      <div class="stepper">
+        <button class="stepper-btn" id="btn-minus">−</button>
+        <span class="stepper-count" id="player-count">6</span>
+        <button class="stepper-btn" id="btn-plus">+</button>
+      </div>
+      <p class="field-hint">من 3 إلى 15 لاعب. أفضل تجربة من 5 لاعبين فأكثر.</p>
+    </div>
+
+    <div class="card">
+      <div class="field-title">✍️ أسماء اللاعبين</div>
+      <div class="name-list" id="name-list"></div>
+      <p class="field-hint">اكتب اسم كل لاعب في خانته. أي خانة فاضية بتُسمّى تلقائيًا "اللاعب رقم".</p>
+    </div>
+
+    <div class="card">
+      <div class="field-title">🕵️ عدد لاعبين "برّة السالفة"</div>
+      <div class="stepper">
+        <button class="stepper-btn" id="btn-outsiders-minus">−</button>
+        <span class="stepper-count small" id="outsiders-count">1</span>
+        <button class="stepper-btn" id="btn-outsiders-plus">+</button>
+      </div>
+      <p class="field-hint" id="outsiders-hint">لاعب واحد برّة السالفة. تقدر تزيد العدد لو مجموعتكم كبيرة.</p>
+    </div>
+
+    <div class="card">
+      <div class="field-title">📂 الفئات</div>
+      <div class="chip-row" id="category-chips"></div>
+      <p class="field-hint">اختر فئة أو أكثر. الكلمة بتُختار عشوائيًا من الفئات المختارة.</p>
+    </div>
+
+    <div class="card">
+      <div class="field-title">⏱️ وقت النقاش بعد توزيع الأدوار</div>
+      <div class="timer-row" id="timer-chips">
+        <div class="timer-chip" data-min="0">بدون مؤقت</div>
+        <div class="timer-chip" data-min="2">دقيقتين</div>
+        <div class="timer-chip selected" data-min="3">3 دقائق</div>
+        <div class="timer-chip" data-min="5">5 دقائق</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="btn-start-round" style="margin-top:6px;">وزّع الأدوار 🎴</button>
+  </section>
+
+  <section id="screen-reveal" class="screen">
+    <div class="topbar">
+      <button class="back-btn" id="btn-cancel-round">✕ إلغاء الجولة</button>
+      <span class="step-label" id="reveal-progress"></span>
+    </div>
+
+    <div class="circle-row" id="seat-row"></div>
+
+    <p class="pass-hint">مرّر الجوال إلى</p>
+    <div class="player-name" id="current-player-name">اللاعب 1</div>
+
+    <div class="card-stage">
+      <div class="lantern-card" id="lantern-card">
+        <div class="face face-hidden">
+          <div class="hidden-icon">🔒</div>
+          <div class="hidden-txt">اضغط على البطاقة لرؤية دورك</div>
+        </div>
+        <div class="face face-shown" id="face-shown"></div>
+      </div>
+    </div>
+
+    <div class="reveal-actions">
+      <button class="btn btn-primary btn-block" id="btn-next-player" disabled>التالي — إخفِ ثم مرّر الجوال</button>
+    </div>
+  </section>
+
+  <section id="screen-discuss" class="screen">
+    <div class="timer-ring-wrap" id="ring-wrap">
+      <svg viewBox="0 0 220 220">
+        <circle class="ring-bg" cx="110" cy="110" r="98"></circle>
+        <circle class="ring-fg" id="ring-fg" cx="110" cy="110" r="98"></circle>
+      </svg>
+      <div class="timer-digits" id="timer-digits">03:00</div>
+    </div>
+    <div class="discuss-title" id="discuss-title">وقت السوالف 🗣️</div>
+    <p class="discuss-sub">كل واحد يسولف عن الكلمة بدون ما يقولها صراحة… وحاولوا تكتشفون مين اللي برّة السالفة.</p>
+    <div class="discuss-actions">
+      <button class="btn btn-ghost btn-block" id="btn-pause-timer">⏸ إيقاف مؤقت</button>
+      <button class="btn btn-primary btn-block" id="btn-finish-discuss">التصويت وكشف النتيجة</button>
+    </div>
+  </section>
+
+  <section id="screen-result" class="screen">
+    <div class="result-emoji">🔎</div>
+    <div class="result-title">وقت الكشف!</div>
+    <p class="brand-sub" style="margin:0;">اسألوا بعض: مين تتوقعون إنه برّة السالفة؟ ثم اضغطوا الزر تحت.</p>
+
+    <div class="result-card" id="result-card" style="display:none;">
+      <div class="result-row"><span id="result-outsider-label">برّة السالفة كان</span><b id="result-outsider">—</b></div>
+      <div class="result-row"><span>الفئة</span><b id="result-category">—</b></div>
+      <div class="result-row"><span>الكلمة</span><b id="result-word">—</b></div>
+    </div>
+
+    <button class="btn btn-ghost btn-block" id="btn-reveal-answer" style="max-width:300px;">كشف الإجابة</button>
+
+    <div class="result-actions" id="result-post-actions" style="display:none;">
+      <button class="btn btn-primary btn-block" id="btn-play-again">🔁 جولة جديدة بنفس اللاعبين</button>
+      <button class="btn btn-ghost btn-block" id="btn-new-setup">⚙️ تغيير الإعدادات</button>
+    </div>
+  </section>
+
+</div></div>
+
+<script>
+const WORD_BANK = {
+  "أماكن": ["المسجد","المطار","الحديقة العامة","المستشفى","المدرسة","السوق الشعبي","المكتبة","صالة الألعاب","الشاطئ","المطعم","محطة القطار","الفندق","السينما","حديقة الحيوان","المخيم الصحراوي","المسبح","محل الحلاقة","الصيدلية","المتحف","السوبرماركت","مركز التسوق","البحر","الجبل","المزرعة","موقف السيارات"],
+  "مهن": ["طبيب","معلم","طيار","نجار","مهندس","طباخ","شرطي","مصور","مزارع","خياط","صيدلاني","محامي","سائق تكسي","مطافئ","صحفي","مبرمج","بحار","نادل","حارس أمن","بائع","مذيع","مترجم","بيطري","كهربائي","سباك"],
+  "أكل ومشروبات": ["كبسة","شاورما","فلافل","كنافة","تمر","قهوة عربية","شاي بالنعناع","مشروب الطاقة","بيتزا","برجر","سمبوسة","مندي","حمص","تبولة","عصير برتقال","آيسكريم","خبز التنور","معمول","لبن رائب","شوربة عدس","مشكل مشاوي","بقلاوة","حليب","ماء بارد","فشار"],
+  "حيوانات": ["جمل","أسد","نمر","فيل","حصان","قطة","كلب","صقر","نعامة","غزال","ثعلب","دب","قرد","بطة","حمامة","سلحفاة","أرنب","خروف","بقرة","فهد","تمساح","دولفين","حوت","نحلة","فراشة"],
+  "رياضة": ["كرة القدم","كرة السلة","السباحة","الجري","رفع الأثقال","التنس","الملاكمة","سباق الهجن","الغطس","ركوب الخيل","كرة الطائرة","الجمباز","اليوغا","التزلج","سباق السيارات","الدراجة الهوائية","كرة اليد","الرماية","المصارعة","التايكواندو"],
+  "وسائل نقل": ["سيارة","دراجة نارية","طائرة","قطار","سفينة","حافلة","دراجة هوائية","تاكسي","مترو الأنفاق","قارب صيد","شاحنة","يخت","منطاد","تلفريك","سكوتر كهربائي"],
+  "أغراض منزلية": ["ثلاجة","مكيف","غسالة ملابس","مكنسة كهربائية","فرن","مروحة","سرير","مرآة","ساعة حائط","مفتاح كهرباء","وسادة","سجادة","إبريق شاي","مقص","مصباح"],
+  "مناسبات واحتفالات": ["عيد الفطر","حفلة زواج","يوم التخرج","عيد ميلاد","استقبال مولود","الوطني","رمضان","حفلة عائلية","ليلة رأس السنة","حفلة تخرج جامعي","سبوع المولود","عقيقة"]
+};
+
+let state = {
+  playersCount: 6,
+  playerNames: [],
+  outsidersCount: 1,
+  categories: new Set(Object.keys(WORD_BANK)),
+  timerMinutes: 3,
+  playerLabels: [],
+  outsiderIndices: new Set(),
+  category: "",
+  word: "",
+  currentIdx: 0,
+  timerLeft: 0,
+  timerHandle: null,
+  timerPaused: false
+};
+
+const $ = (id) => document.getElementById(id);
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  $(id).scrollTop = 0;
+}
+function shuffledIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function maxOutsiders(){ return Math.max(1, state.playersCount - 2); }
+
+(function initStars(){
+  const wrap = $('stars');
+  for(let i=0;i<40;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3.5)+'s';
+    wrap.appendChild(s);
+  }
+})();
+
+function renderCategoryChips(){
+  const wrap = $('category-chips');
+  wrap.innerHTML = '';
+  Object.keys(WORD_BANK).forEach(cat=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (state.categories.has(cat) ? ' selected' : '');
+    chip.textContent = cat;
+    chip.tabIndex = 0;
+    chip.addEventListener('click', ()=>{
+      if(state.categories.has(cat)){
+        if(state.categories.size > 1) state.categories.delete(cat);
+      } else {
+        state.categories.add(cat);
+      }
+      renderCategoryChips();
+    });
+    wrap.appendChild(chip);
+  });
+}
+renderCategoryChips();
+
+function ensureNamesArrayLength(){
+  while(state.playerNames.length < state.playersCount) state.playerNames.push('');
+  state.playerNames.length = state.playersCount;
+}
+function renderNameInputs(){
+  ensureNamesArrayLength();
+  const wrap = $('name-list');
+  wrap.innerHTML = '';
+  for(let i=0;i<state.playersCount;i++){
+    const row = document.createElement('div');
+    row.className = 'name-row';
+    const badge = document.createElement('div');
+    badge.className = 'name-badge';
+    badge.textContent = (i+1);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'name-input';
+    input.placeholder = 'اسم اللاعب '+(i+1);
+    input.value = state.playerNames[i] || '';
+    input.setAttribute('maxlength','18');
+    input.addEventListener('input', ()=>{ state.playerNames[i] = input.value; });
+    row.appendChild(badge);
+    row.appendChild(input);
+    wrap.appendChild(row);
+  }
+}
+renderNameInputs();
+
+function refreshPlayerCountDisplay(){
+  $('player-count').textContent = state.playersCount;
+  $('btn-minus').disabled = state.playersCount<=3;
+  $('btn-plus').disabled = state.playersCount>=15;
+}
+$('btn-minus').addEventListener('click', ()=>{
+  if(state.playersCount>3){ state.playersCount--; refreshPlayerCountDisplay(); renderNameInputs(); clampOutsiders(); }
+});
+$('btn-plus').addEventListener('click', ()=>{
+  if(state.playersCount<15){ state.playersCount++; refreshPlayerCountDisplay(); renderNameInputs(); clampOutsiders(); }
+});
+
+function refreshOutsidersDisplay(){
+  $('outsiders-count').textContent = state.outsidersCount;
+  $('btn-outsiders-minus').disabled = state.outsidersCount<=1;
+  $('btn-outsiders-plus').disabled = state.outsidersCount>=maxOutsiders();
+  $('outsiders-hint').textContent = state.outsidersCount === 1
+    ? 'لاعب واحد برّة السالفة. تقدر تزيد العدد لو مجموعتكم كبيرة.'
+    : state.outsidersCount + ' لاعبين برّة السالفة في نفس الجولة، وكل واحد ما يعرف مين الثاني.';
+}
+function clampOutsiders(){
+  const mx = maxOutsiders();
+  if(state.outsidersCount > mx) state.outsidersCount = mx;
+  refreshOutsidersDisplay();
+}
+$('btn-outsiders-minus').addEventListener('click', ()=>{
+  if(state.outsidersCount>1){ state.outsidersCount--; refreshOutsidersDisplay(); }
+});
+$('btn-outsiders-plus').addEventListener('click', ()=>{
+  if(state.outsidersCount<maxOutsiders()){ state.outsidersCount++; refreshOutsidersDisplay(); }
+});
+
+document.querySelectorAll('.timer-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.timer-chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    state.timerMinutes = parseInt(chip.dataset.min,10);
+  });
+});
+
+$('btn-go-setup').addEventListener('click', ()=> showScreen('screen-setup'));
+$('btn-back-home').addEventListener('click', ()=> showScreen('screen-home'));
+$('btn-cancel-round').addEventListener('click', ()=>{ stopTimer(); showScreen('screen-setup'); });
+$('btn-new-setup').addEventListener('click', ()=> showScreen('screen-setup'));
+
+function showSetupError(msg){ const box = $('setup-error'); box.textContent = msg; box.classList.add('show'); }
+function clearSetupError(){ $('setup-error').classList.remove('show'); }
+
+$('btn-start-round').addEventListener('click', ()=>{
+  clearSetupError();
+  if(state.categories.size === 0){ showSetupError('اختر فئة وحدة على الأقل.'); return; }
+  state.playerLabels = state.playerNames.map((n,i)=> n.trim().length ? n.trim() : 'اللاعب '+(i+1));
+  startNewRound();
+  showScreen('screen-reveal');
+});
+
+function pickWord(){
+  const pool = [];
+  state.categories.forEach(cat=>{ WORD_BANK[cat].forEach(w=> pool.push({cat, word:w})); });
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  state.category = pick.cat;
+  state.word = pick.word;
+}
+
+function startNewRound(){
+  pickWord();
+  const order = shuffledIndices(state.playersCount);
+  state.outsiderIndices = new Set(order.slice(0, state.outsidersCount));
+  state.currentIdx = 0;
+  renderSeatRow();
+  renderRevealForCurrent();
+}
+
+function renderSeatRow(){
+  const row = $('seat-row');
+  row.innerHTML = '';
+  for(let i=0;i<state.playersCount;i++){
+    const seat = document.createElement('div');
+    seat.className = 'seat';
+    if(i < state.currentIdx) seat.classList.add('done');
+    if(i === state.currentIdx) seat.classList.add('current');
+    seat.textContent = (i+1);
+    row.appendChild(seat);
+  }
+}
+
+function renderRevealForCurrent(){
+  const idx = state.currentIdx;
+  const label = state.playerLabels[idx];
+  $('current-player-name').textContent = label;
+  $('reveal-progress').textContent = (idx+1)+' / '+state.playersCount;
+
+  const card = $('lantern-card');
+  card.classList.remove('revealed','is-outsider');
+  const isOutsider = state.outsiderIndices.has(idx);
+  const faceShown = $('face-shown');
+
+  if(isOutsider){
+    faceShown.innerHTML = `
+      <div class="outsider-emoji">🕵️</div>
+      <div class="outsider-word">أنت برّة السالفة!</div>
+      <div class="role-cat">الفئة: ${state.category}</div>
+      <div class="outsider-sub">لا تعرف الكلمة. سولف بذكاء وحاول تكتشفها من كلام الباقين بدون ما ينكشف أمرك.</div>
+    `;
+    card.classList.add('is-outsider');
+  } else {
+    faceShown.innerHTML = `
+      <div class="role-label">الفئة</div>
+      <div class="role-cat">${state.category}</div>
+      <div class="role-word">${state.word}</div>
+    `;
+  }
+
+  card.onclick = ()=>{
+    if(!card.classList.contains('revealed')){
+      card.classList.add('revealed');
+      $('btn-next-player').disabled = false;
+    } else {
+      card.classList.remove('revealed');
+    }
+  };
+  $('btn-next-player').disabled = true;
+}
+
+$('btn-next-player').addEventListener('click', ()=>{
+  $('lantern-card').classList.remove('revealed');
+  state.currentIdx++;
+  if(state.currentIdx >= state.playersCount){ goToDiscuss(); }
+  else { renderSeatRow(); renderRevealForCurrent(); }
+});
+
+function goToDiscuss(){
+  showScreen('screen-discuss');
+  stopTimer();
+  if(state.timerMinutes > 0){
+    $('ring-wrap').style.display = '';
+    $('discuss-title').textContent = 'وقت السوالف 🗣️';
+    $('btn-pause-timer').style.display = '';
+    state.timerLeft = state.timerMinutes*60;
+    state.timerPaused = false;
+    updateRing(1);
+    updateDigits();
+    state.timerHandle = setInterval(tickTimer, 1000);
+  } else {
+    $('ring-wrap').style.display = 'none';
+    $('btn-pause-timer').style.display = 'none';
+    $('discuss-title').textContent = 'وقت السوالف 🗣️ (بدون مؤقت)';
+  }
+}
+
+const RING_CIRC = 2*Math.PI*98;
+function updateRing(fraction){
+  const fg = $('ring-fg');
+  fg.style.strokeDasharray = RING_CIRC;
+  fg.style.strokeDashoffset = RING_CIRC*(1-fraction);
+}
+function updateDigits(){
+  const m = Math.floor(state.timerLeft/60);
+  const s = state.timerLeft%60;
+  $('timer-digits').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function tickTimer(){
+  if(state.timerPaused) return;
+  state.timerLeft--;
+  const total = state.timerMinutes*60;
+  updateRing(Math.max(state.timerLeft,0)/total);
+  updateDigits();
+  if(state.timerLeft <= 0){ stopTimer(); goToResult(); }
+}
+function stopTimer(){ if(state.timerHandle){ clearInterval(state.timerHandle); state.timerHandle = null; } }
+$('btn-pause-timer').addEventListener('click', ()=>{
+  state.timerPaused = !state.timerPaused;
+  $('btn-pause-timer').textContent = state.timerPaused ? '▶ استمرار' : '⏸ إيقاف مؤقت';
+});
+$('btn-finish-discuss').addEventListener('click', ()=>{ stopTimer(); goToResult(); });
+
+function goToResult(){
+  $('result-card').style.display = 'none';
+  $('result-post-actions').style.display = 'none';
+  $('btn-reveal-answer').style.display = '';
+  showScreen('screen-result');
+}
+$('btn-reveal-answer').addEventListener('click', ()=>{
+  const names = Array.from(state.outsiderIndices).sort((a,b)=>a-b).map(i=>state.playerLabels[i]);
+  $('result-outsider-label').textContent = names.length>1 ? 'برّة السالفة كانوا' : 'برّة السالفة كان';
+  $('result-outsider').textContent = names.join('، ');
+  $('result-category').textContent = state.category;
+  $('result-word').textContent = state.word;
+  $('result-card').style.display = '';
+  $('result-post-actions').style.display = 'flex';
+  $('btn-reveal-answer').style.display = 'none';
+});
+$('btn-play-again').addEventListener('click', ()=>{ startNewRound(); showScreen('screen-reveal'); });
+
+refreshPlayerCountDisplay();
+clampOutsiders();
+</script>
+</body>
+</html>
